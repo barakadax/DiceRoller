@@ -1,9 +1,17 @@
 import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity } from 'react-native';
+import { Text, View, Dimensions, TouchableOpacity } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { genRandNum } from './numGen';
+import { styles } from './style'
 
-const GridComponent = ({ selectedValue, screenWidth }) => {
+const GridComponent = ({ selectedValue, screenWidth, randomNumbers }) => {
+  const [gridItems, setGridItems] = useState([]);
+
+  useEffect(() => {
+    setGridItems(randomNumbers);
+  }, [selectedValue]);
+
   const generateGridItems = (count) => {
     const items = [];
     for (let i = 1; i <= count; i++) {
@@ -16,7 +24,7 @@ const GridComponent = ({ selectedValue, screenWidth }) => {
     <View style={[styles.gridContainer, { width: screenWidth }]}>
       {generateGridItems(selectedValue).map((item, index) => (
         <View key={index} style={styles.gridItem}>
-          <Text style={styles.gridItemText}>{item.label}</Text>
+          <Text style={styles.gridItemText}>{randomNumbers[index]}</Text>
         </View>
       ))}
     </View>
@@ -66,6 +74,17 @@ export default function App() {
       console.error("Error saving amount of dices:", e);
     }
   };
+
+  const randomValues = () => {
+    const randomNumbers = [];
+    for (let i = 0; i < parseInt(value); i++) {
+      randomNumbers.push(genRandNum(1, 6));
+    }
+    console.info(randomNumbers);
+    return randomNumbers;
+  };
+
+  const randomNumbers = randomValues();
   
   return (
     <View style={styles.main}>
@@ -95,69 +114,19 @@ export default function App() {
         showTickIcon={false}
         showArrowIcon={false}
       />
-      <GridComponent selectedValue={parseInt(value)} screenWidth={pickerMaxWidth} /> 
+      <GridComponent
+        selectedValue={parseInt(value)}
+        screenWidth={pickerMaxWidth}
+        randomNumbers={randomNumbers}
+      />
       <View style={ styles.buttonContainer }>
-        <TouchableOpacity style={[styles.button, { width: pickerMaxWidth }]}>
+        <TouchableOpacity
+          style={[styles.button, { width: pickerMaxWidth }]}
+          onPress={randomValues}
+        >
           <Text style={styles.buttonText}>{'\u{1F340}'}</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  main: {
-    flex: 1,
-    flexDirection: 'column',
-    backgroundColor: '#6b7b8c',
-    alignItems: 'center',
-    paddingTop: 35
-  },
-  gridContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    backgroundColor: '#42526e',
-    marginTop: 50,
-    borderRadius: 5,
-    borderColor: '#d9e4e9',
-    borderWidth: 1,
-    padding: 20,
-    gap: 5
-  },
-  gridItem: {
-    width: 80,
-    height: 80,
-    padding: 20,
-    backgroundColor: '#d9e4e9',
-    borderColor: '#000',
-    borderWidth: 1,
-    borderRadius: 5,
-    justifyContent: 'center',
-  },
-  gridItemText: {
-    textAlign: 'center',
-    color: '#233040',
-    fontSize: 30,
-  },
-  buttonContainer: {
-    position: 'absolute',
-    bottom: 20,
-    alignItems: 'center',
-  },
-  button: {
-    backgroundColor: '#42526e',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    borderWidth: 1,
-    textAlign: 'center',
-    borderColor: '#d9e4e9',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#d9e4e9',
-    fontSize: 18,
-  },
-});
