@@ -10,7 +10,7 @@ const GridComponent = ({ selectedValue, screenWidth, randomNumbers }) => {
 
   useEffect(() => {
     setGridItems(randomNumbers);
-  }, [selectedValue]);
+  }, [selectedValue, randomNumbers]);
 
   const generateGridItems = (count) => {
     const items = [];
@@ -31,6 +31,15 @@ const GridComponent = ({ selectedValue, screenWidth, randomNumbers }) => {
   );
 };
 
+const randomValues = (value) => {
+  const randomNumbers = [];
+  for (let i = 0; i < parseInt(value); i++) {
+    randomNumbers.push(genRandNum(1, 6));
+  }
+  console.info(randomNumbers);
+  return randomNumbers;
+};
+
 export default function App() {
   const initialItems = [
     { label: '1', value: '1' },
@@ -44,6 +53,7 @@ export default function App() {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(initialItems[0].value);
   const [items, setItems] = useState(initialItems);
+  const [randomNumbers, setRandomNumbers] = useState(randomValues(initialItems.length))
   const screenWidth = Dimensions.get('window').width;
   const pickerMaxWidth = (screenWidth * 0.8) > 300 ? 300 : (screenWidth * 0.8);
 
@@ -74,17 +84,6 @@ export default function App() {
       console.error("Error saving amount of dices:", e);
     }
   };
-
-  const randomValues = () => {
-    const randomNumbers = [];
-    for (let i = 0; i < parseInt(value); i++) {
-      randomNumbers.push(genRandNum(1, 6));
-    }
-    console.info(randomNumbers);
-    return randomNumbers;
-  };
-
-  const randomNumbers = randomValues();
   
   return (
     <View style={styles.main}>
@@ -122,7 +121,7 @@ export default function App() {
       <View style={ styles.buttonContainer }>
         <TouchableOpacity
           style={[styles.button, { width: pickerMaxWidth }]}
-          onPress={randomValues}
+          onPress={() => setRandomNumbers(randomValues(value))}
         >
           <Text style={styles.buttonText}>{'\u{1F340}'}</Text>
         </TouchableOpacity>
