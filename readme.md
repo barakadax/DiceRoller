@@ -34,4 +34,6 @@ adb devices
     <li>instead of dice with same background each dice can have own background including gif/video as background</li>
     <li>OOP and clean code</li>
     <li>Test with Jest</li>
+    <li>Google ads</li>
+    <li>Skins for dices purchaseable from the settings menu</li>
 </ol>
