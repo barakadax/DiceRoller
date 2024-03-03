@@ -5,30 +5,31 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { genRandNum } from './numGen';
 import { styles } from './style'
 
+const indexRange = (count) => {
+  return [...Array(count).keys()]
+};
+
 const GridComponent = ({ selectedValue, screenWidth, randomNumbers }) => {
-  const [gridItems, setGridItems] = useState([]);
-
-  useEffect(() => {
-    setGridItems(randomNumbers);
-  }, [selectedValue]);
-
-  const generateGridItems = (count) => {
-    const items = [];
-    for (let i = 1; i <= count; i++) {
-      items.push({ label: `${i}`});
-    }
-    return items;
-  };
+  const dices = indexRange(selectedValue).map((index) => (
+    <View key={index} style={styles.gridItem}>
+      <Text style={styles.gridItemText}>{randomNumbers[index]}</Text>
+    </View>
+  ));
 
   return (
     <View style={[styles.gridContainer, { width: screenWidth }]}>
-      {generateGridItems(selectedValue).map((item, index) => (
-        <View key={index} style={styles.gridItem}>
-          <Text style={styles.gridItemText}>{randomNumbers[index]}</Text>
-        </View>
-      ))}
+      {dices}
     </View>
   );
+};
+
+const randomValues = (value) => {
+  const randomNumbers = [];
+  for (let i = 0; i < parseInt(value); i++) {
+    randomNumbers.push(genRandNum(1, 6));
+  }
+  console.info(`New numbers calculated ${randomNumbers}`);
+  return randomNumbers;
 };
 
 export default function App() {
@@ -44,6 +45,7 @@ export default function App() {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(initialItems[0].value);
   const [items, setItems] = useState(initialItems);
+  const [dicesValues, setDicesValues] = useState(randomValues(initialItems.length))
   const screenWidth = Dimensions.get('window').width;
   const pickerMaxWidth = (screenWidth * 0.8) > 300 ? 300 : (screenWidth * 0.8);
 
@@ -53,7 +55,7 @@ export default function App() {
       try {
         const jsonValue = await AsyncStorage.getItem('amountOfDices');
         amount = jsonValue != null ? JSON.parse(jsonValue) : null;
-      } catch(e) {
+      } catch (e) {
         console.error("Error getting amount of dices:", e);
       }
       //console.info("get was called with amount: ", amount);
@@ -70,22 +72,11 @@ export default function App() {
       const jsonValue = JSON.stringify(value);
       await AsyncStorage.setItem('amountOfDices', jsonValue);
       //console.info("set was called with value of: ", jsonValue);
-    } catch(e) {
+    } catch (e) {
       console.error("Error saving amount of dices:", e);
     }
   };
 
-  const randomValues = () => {
-    const randomNumbers = [];
-    for (let i = 0; i < parseInt(value); i++) {
-      randomNumbers.push(genRandNum(1, 6));
-    }
-    console.info(randomNumbers);
-    return randomNumbers;
-  };
-
-  const randomNumbers = randomValues();
-  
   return (
     <View style={styles.main}>
       <DropDownPicker
@@ -94,7 +85,7 @@ export default function App() {
         items={items}
         setOpen={setOpen}
         setValue={handleValueChange}
-        setItems={setItems}
+        // setItems={setItems}
         containerStyle={{ width: pickerMaxWidth }}
         dropDownStyle={{ width: pickerMaxWidth }}
         itemSeparator={{ value: true }}
@@ -117,12 +108,14 @@ export default function App() {
       <GridComponent
         selectedValue={parseInt(value)}
         screenWidth={pickerMaxWidth}
-        randomNumbers={randomNumbers}
+        randomNumbers={dicesValues}
       />
-      <View style={ styles.buttonContainer }>
+      <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={[styles.button, { width: pickerMaxWidth }]}
-          onPress={randomValues}
+          onPress={() => setDicesValues(
+            randomValues(initialItems.length)
+          )}
         >
           <Text style={styles.buttonText}>{'\u{1F340}'}</Text>
         </TouchableOpacity>
