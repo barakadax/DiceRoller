@@ -2,7 +2,6 @@
   "expo": {
     "name": "DiceRoller",
     "slug": "DiceRoller",
-    "displayName": "Dicer Roller",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -22,10 +21,16 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.barakadax.DiceRoller"
     },
     "web": {
       "favicon": "./assets/icon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "04e5bf92-0a87-4135-bdac-87d4f0261080"
+      }
     }
   }
 }
