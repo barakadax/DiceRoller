@@ -19,6 +19,18 @@ adb start-server
 adb devices
 ```
 
+## Build and Publish
+> **_INFO:_** One's must have an eas account to build this project
+### Build Preview
+```shell
+eas build -p android --profile preview
+```
+
+### Publish to store
+```shell
+eas submit # will publish using "production" profile
+```
+
 ## Bugs:
 <ol>
     <li>Async save always saves last used not new picked option</li>
@@ -26,6 +38,7 @@ adb devices
 
 ## TODO:
 <ol>
+    <li>Add google account configuration for "eas submit"</li>
     <li>When click on dice open a menu from the bottom upwards, when clicking anywhere that is not that menu it's closes it</li>
     <li>Make each dice stateful so it will have min max of options of its own and lock so even when you roll that value won't change</li>
     <li>Add support on shake to roll</li>
