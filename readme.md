@@ -32,21 +32,18 @@ eas submit # will publish using "production" profile
 ```
 
 ## Bugs:
-<ol>
-    <li>Async save always saves last used not new picked option</li>
-</ol>
+ 1. Async save always saves last used not new picked option
+
 
 ## TODO:
-<ol>
-    <li>Add google account configuration for "eas submit"</li>
-    <li>When click on dice open a menu from the bottom upwards, when clicking anywhere that is not that menu it's closes it</li>
-    <li>Make each dice stateful so it will have min max of options of its own and lock so even when you roll that value won't change</li>
-    <li>Add support on shake to roll</li>
-    <li>Environment variable support</li>
-    <li>Add small button for setting menu, menu should be a different scene</li>
-    <li>instead of dice with same background each dice can have own background including gif/video as background</li>
-    <li>OOP and clean code</li>
-    <li>Test with Jest</li>
-    <li>Google ads</li>
-    <li>Skins for dices purchaseable from the settings menu</li>
-</ol>
+ 1. Add google account configuration for "eas submit"
+ 2. When click on dice open a menu from the bottom upwards, when clicking anywhere that is not that menu it's closes it
+ 3. Make each dice stateful so it will have min max of options of its own and lock so even when you roll that value won't change
+ 4. Add support on shake to roll
+ 5. Environment variable support
+ 6. Add small button for setting menu, menu should be a different scene
+ 7. Instead of dice with same background each dice can have own background including gif/video as background
+ 8. OOP and clean code
+ 9.  Test with Jest
+ 10. Google ads
+ 11. Skins for dices purchaseable from the settings menu
