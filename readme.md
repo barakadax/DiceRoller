@@ -36,4 +36,5 @@ adb devices
     <li>Test with Jest</li>
     <li>Google ads</li>
     <li>Skins for dices purchaseable from the settings menu</li>
+    <li>Fix Github actions for this project</li>
 </ol>

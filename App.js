@@ -3,18 +3,20 @@ import { Text, View, Dimensions, TouchableOpacity } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { genRandNum } from './numGen';
-import { styles } from './style'
+import { styles } from './style';
 
 const indexRange = (count) => {
   return [...Array(count).keys()]
 };
 
 const GridComponent = ({ selectedValue, screenWidth, randomNumbers }) => {
-  const dices = indexRange(selectedValue).map((index) => (
-    <View key={index} style={styles.gridItem}>
-      <Text style={styles.gridItemText}>{randomNumbers[index]}</Text>
-    </View>
-  ));
+  const dices = indexRange(selectedValue).map((index) => {
+    return (
+      <View key={index} style={styles.gridItem}>
+        <Text style={styles.gridItemText}>{randomNumbers[index] !== undefined ? randomNumbers[index] : '?'}</Text>
+      </View>
+    );
+  });
 
   return (
     <View style={[styles.gridContainer, { width: screenWidth }]}>
@@ -28,7 +30,6 @@ const randomValues = (value) => {
   for (let i = 0; i < parseInt(value); i++) {
     randomNumbers.push(genRandNum(1, 6));
   }
-  console.info(`New numbers calculated ${randomNumbers}`);
   return randomNumbers;
 };
 
@@ -44,7 +45,7 @@ export default function App() {
 
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(initialItems[0].value);
-  const [items, setItems] = useState(initialItems);
+  const [items, _] = useState(initialItems);
   const [dicesValues, setDicesValues] = useState(randomValues(initialItems.length))
   const screenWidth = Dimensions.get('window').width;
   const pickerMaxWidth = (screenWidth * 0.8) > 300 ? 300 : (screenWidth * 0.8);
@@ -58,11 +59,11 @@ export default function App() {
       } catch (e) {
         console.error("Error getting amount of dices:", e);
       }
-      //console.info("get was called with amount: ", amount);
       if (amount !== null) {
         setValue(amount);
       }
     };
+
     fetchAmountOfDices();
   }, []);
 
@@ -71,7 +72,6 @@ export default function App() {
     try {
       const jsonValue = JSON.stringify(value);
       await AsyncStorage.setItem('amountOfDices', jsonValue);
-      //console.info("set was called with value of: ", jsonValue);
     } catch (e) {
       console.error("Error saving amount of dices:", e);
     }
@@ -85,7 +85,6 @@ export default function App() {
         items={items}
         setOpen={setOpen}
         setValue={handleValueChange}
-        // setItems={setItems}
         containerStyle={{ width: pickerMaxWidth }}
         dropDownStyle={{ width: pickerMaxWidth }}
         itemSeparator={{ value: true }}
@@ -114,7 +113,7 @@ export default function App() {
         <TouchableOpacity
           style={[styles.button, { width: pickerMaxWidth }]}
           onPress={() => setDicesValues(
-            randomValues(initialItems.length)
+            randomValues(value)
           )}
         >
           <Text style={styles.buttonText}>{'\u{1F340}'}</Text>
