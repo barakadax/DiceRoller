@@ -111,6 +111,7 @@ const App = () => {
 
   // Function to render the cubes with their values and animation
   const renderCubes = () => {
+    const dynamicFontSize = Math.max(32, Math.round(cubeSize * 0.35));
     return cubeValues.map((value, index) => {
       const isLocked = lockedCubes[index];
       return (
@@ -135,7 +136,7 @@ const App = () => {
             }}
             activeOpacity={0.7}
           >
-            <Text style={[styles.cubeText, isLocked && styles.cubeTextLocked]}>{value}</Text>
+            <Text style={[styles.cubeText, isLocked && styles.cubeTextLocked, { fontSize: dynamicFontSize }]}>{value}</Text>
             {isLocked && <Text style={styles.lockIcon}>{'\u{1F512}'}</Text>}
           </TouchableOpacity>
         </Animated.View>
@@ -278,7 +279,6 @@ const styles = StyleSheet.create({
     color: Colors.dark.lockIcon,
   },
   cubeText: {
-    fontSize: 32,
     fontWeight: 'bold',
     color: Colors.dark.cubeText,
   },
