@@ -1,7 +1,7 @@
 
 import Slider from "@react-native-community/slider";
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Dimensions, Easing, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Dimensions, Easing, Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Colors } from '../../constants/Colors';
 
 const App = () => {
@@ -10,6 +10,10 @@ const App = () => {
   const [lockedCubes, setLockedCubes] = useState<boolean[]>([]);
   // Animated values for each cube
   const animationValues = useRef<Animated.Value[]>([]);
+
+  // Modal state
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedCubeIndex, setSelectedCubeIndex] = useState<number | null>(null);
 
   // Function to generate a random number between 1 and 6
   const generateRandomValue = (max: number = 6) => {
@@ -87,6 +91,14 @@ const App = () => {
   const toggleLock = (index: number) => {
     setLockedCubes((prev) => {
       const updated = [...prev];
+      // If trying to lock, check if it would lock all cubes
+      if (!updated[index]) {
+        const lockedCount = updated.filter(Boolean).length;
+        if (lockedCount === updated.length - 1) {
+          // Prevent locking the last available cube
+          return prev;
+        }
+      }
       updated[index] = !updated[index];
       return updated;
     });
@@ -112,10 +124,14 @@ const App = () => {
               isLocked && styles.lockedCube,
             ]}
             onPress={() => toggleLock(index)}
+            onLongPress={() => {
+              setSelectedCubeIndex(index);
+              setModalVisible(true);
+            }}
             activeOpacity={0.7}
           >
             <Text style={[styles.cubeText, isLocked && styles.cubeTextLocked]}>{value}</Text>
-            {isLocked && <Text style={styles.lockIcon}>🔒</Text>}
+            {isLocked && <Text style={styles.lockIcon}>{'\u{1F512}'}</Text>}
           </TouchableOpacity>
         </Animated.View>
       );
@@ -148,6 +164,29 @@ const App = () => {
           <Text style={styles.buttonText}>Throw the dices!</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Modal for long-press on cube */}
+      <Modal
+        visible={modalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Cube Options</Text>
+            <Text style={styles.modalText}>
+              {selectedCubeIndex !== null ? `Cube #${selectedCubeIndex + 1}\nvalue: ${cubeValues[selectedCubeIndex]}` : ''}
+            </Text>
+            <TouchableOpacity
+              style={styles.modalCloseButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.modalCloseButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -228,6 +267,46 @@ const styles = StyleSheet.create({
   buttonText: {
     color: Colors.dark.buttonText,
     fontSize: 18,
+    fontWeight: 'bold',
+  },
+
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: Colors.dark.background,
+    padding: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    minWidth: 220,
+    elevation: 5,
+    borderWidth: 2,
+    borderColor: Colors.dark.border,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: Colors.dark.cubeText,
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 20,
+    color: Colors.dark.cubeText,
+  },
+  modalCloseButton: {
+    backgroundColor: Colors.dark.button,
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    borderRadius: 6,
+  },
+  modalCloseButtonText: {
+    color: Colors.dark.buttonText,
+    fontSize: 16,
     fontWeight: 'bold',
   },
 });
