@@ -8,6 +8,8 @@ const App = () => {
   const [numCubes, setNumCubes] = useState(1);
   const [cubeValues, setCubeValues] = useState<number[]>([]);
   const [lockedCubes, setLockedCubes] = useState<boolean[]>([]);
+  // Per-cube max values (default 6)
+  const [cubeMaxValues, setCubeMaxValues] = useState<number[]>([]);
   // Animated values for each cube
   const animationValues = useRef<Animated.Value[]>([]);
 
@@ -15,7 +17,7 @@ const App = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedCubeIndex, setSelectedCubeIndex] = useState<number | null>(null);
 
-  // Function to generate a random number between 1 and 6
+  // Function to generate a random number between 1 and max
   const generateRandomValue = (max: number = 6) => {
     return Math.floor(Math.random() * max) + 1;
   };
@@ -24,12 +26,15 @@ const App = () => {
   const initializeCubeValues = React.useCallback(() => {
     const newValues = [];
     const newLocks = [];
+    const newMaxValues = [];
     for (let i = 0; i < numCubes; i++) {
-      newValues.push(generateRandomValue());
+      newMaxValues.push(6); // default max value
+      newValues.push(generateRandomValue(6));
       newLocks.push(false);
     }
     setCubeValues(newValues);
     setLockedCubes(newLocks);
+    setCubeMaxValues(newMaxValues);
     // Initialize animation values for each cube
     animationValues.current = Array(numCubes)
       .fill(0)
@@ -72,7 +77,7 @@ const App = () => {
   const rerandomizeCubes = () => {
     setCubeValues((prevValues) => {
       return prevValues.map((val, idx) =>
-        lockedCubes[idx] ? val : generateRandomValue()
+        lockedCubes[idx] ? val : generateRandomValue(cubeMaxValues[idx] || 6)
       );
     });
     animateCubes();
@@ -178,6 +183,32 @@ const App = () => {
             <Text style={styles.modalText}>
               {selectedCubeIndex !== null ? `Cube #${selectedCubeIndex + 1}\nvalue: ${cubeValues[selectedCubeIndex]}` : ''}
             </Text>
+            {/* Max value selector */}
+            {selectedCubeIndex !== null && (
+              <View style={{marginBottom: 20, alignItems: 'center'}}>
+                <Text style={{fontSize: 14, color: Colors.dark.cubeText, marginBottom: 6}}>Max value for this cube:</Text>
+                <View style={{flexDirection:'row',alignItems:'center'}}>
+                  <Slider
+                    style={{width: 120, height: 30}}
+                    minimumValue={2}
+                    maximumValue={20}
+                    step={1}
+                    value={cubeMaxValues[selectedCubeIndex] || 6}
+                    onValueChange={val => {
+                      setCubeMaxValues(prev => {
+                        const updated = [...prev];
+                        updated[selectedCubeIndex] = val;
+                        return updated;
+                      });
+                    }}
+                    minimumTrackTintColor={Colors.dark.sliderMinTrack}
+                    maximumTrackTintColor={Colors.dark.sliderMaxTrack}
+                    thumbTintColor={Colors.dark.sliderThumb}
+                  />
+                  <Text style={{marginLeft:8, fontSize:16, color: Colors.dark.cubeText}}>{cubeMaxValues[selectedCubeIndex] || 6}</Text>
+                </View>
+              </View>
+            )}
             <TouchableOpacity
               style={styles.modalCloseButton}
               onPress={() => setModalVisible(false)}

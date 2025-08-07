@@ -24,7 +24,6 @@ adb devices
 
 ## TODO:
 <ol>
-    <li>Long press dice to decide max value from 2 to 100 to random from</li>
     <li>Add support on shake to roll</li>
     <li>Better ux/ui</li>
     <li>Fix icons</li>
