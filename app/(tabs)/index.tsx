@@ -1,4 +1,4 @@
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Slider from "@react-native-community/slider";
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, Easing, Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -10,6 +10,8 @@ const App = () => {
   const [lockedCubes, setLockedCubes] = useState<boolean[]>([]);
   // Per-cube max values (default 6)
   const [cubeMaxValues, setCubeMaxValues] = useState<number[]>([]);
+  // Default dice max value from settings
+  const [defaultDiceMax, setDefaultDiceMax] = useState(6);
   // Animated values for each cube
   const animationValues = useRef<Animated.Value[]>([]);
 
@@ -18,7 +20,7 @@ const App = () => {
   const [selectedCubeIndex, setSelectedCubeIndex] = useState<number | null>(null);
 
   // Function to generate a random number between 1 and max
-  const generateRandomValue = (max: number = 6) => {
+  const generateRandomValue = (max: number) => {
     return Math.floor(Math.random() * max) + 1;
   };
 
@@ -28,8 +30,9 @@ const App = () => {
     const newLocks = [];
     const newMaxValues = [];
     for (let i = 0; i < numCubes; i++) {
-      newMaxValues.push(6); // default max value
-      newValues.push(generateRandomValue(6));
+      // Always use the latest defaultDiceMax for new cubes
+      newMaxValues.push(defaultDiceMax);
+      newValues.push(generateRandomValue(defaultDiceMax));
       newLocks.push(false);
     }
     setCubeValues(newValues);
@@ -39,7 +42,26 @@ const App = () => {
     animationValues.current = Array(numCubes)
       .fill(0)
       .map((_, i) => animationValues.current[i] || new Animated.Value(1));
-  }, [numCubes]);
+  }, [numCubes, defaultDiceMax]);
+
+  // Live update defaultDiceMax from AsyncStorage (poll every 500ms)
+  useEffect(() => {
+    let isMounted = true;
+    let lastValue = defaultDiceMax;
+    const poll = async () => {
+      const val = await AsyncStorage.getItem('defaultDiceMax');
+      if (val !== null && isMounted) {
+        const numVal = Number(val);
+        if (numVal !== lastValue) {
+          setDefaultDiceMax(numVal);
+          lastValue = numVal;
+        }
+      }
+      if (isMounted) setTimeout(poll, 500);
+    };
+    poll();
+    return () => { isMounted = false; };
+  }, [defaultDiceMax]);
 
   // Effect to run when numCubes changes (slider moved)
   // This ensures new cubes get a random value immediately
@@ -77,7 +99,7 @@ const App = () => {
   const rerandomizeCubes = () => {
     setCubeValues((prevValues) => {
       return prevValues.map((val, idx) =>
-        lockedCubes[idx] ? val : generateRandomValue(cubeMaxValues[idx] || 6)
+        lockedCubes[idx] ? val : generateRandomValue(cubeMaxValues[idx] || defaultDiceMax)
       );
     });
     animateCubes();
