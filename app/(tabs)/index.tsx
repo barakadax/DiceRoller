@@ -172,7 +172,7 @@ const App = () => {
             }}
             activeOpacity={0.7}
           >
-            <Text style={[styles.cubeText, isLocked && { fontSize: dynamicFontSize, color: cubeTextColor }]}>{value}</Text>
+            <Text style={[styles.cubeText, { fontSize: dynamicFontSize, color: cubeTextColor }]}>{value}</Text>
             {isLocked && <Text style={styles.lockIcon}>{'\u{1F512}'}</Text>}
           </TouchableOpacity>
         </Animated.View>
