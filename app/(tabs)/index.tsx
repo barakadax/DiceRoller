@@ -8,14 +8,9 @@ const App = () => {
   const [numCubes, setNumCubes] = useState(1);
   const [cubeValues, setCubeValues] = useState<number[]>([]);
   const [lockedCubes, setLockedCubes] = useState<boolean[]>([]);
-  // Per-cube max values (default 6)
   const [cubeMaxValues, setCubeMaxValues] = useState<number[]>([]);
-  // Default dice max value from settings
   const [defaultDiceMax, setDefaultDiceMax] = useState(6);
-  // Animated values for each cube
   const animationValues = useRef<Animated.Value[]>([]);
-
-  // Modal state
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedCubeIndex, setSelectedCubeIndex] = useState<number | null>(null);
 
@@ -44,24 +39,36 @@ const App = () => {
       .map((_, i) => animationValues.current[i] || new Animated.Value(1));
   }, [numCubes, defaultDiceMax]);
 
-  // Live update defaultDiceMax from AsyncStorage (poll every 500ms)
+  // Live update defaultDiceMax and maxCubes from AsyncStorage (poll every 1 second)
   useEffect(() => {
     let isMounted = true;
-    let lastValue = defaultDiceMax;
+    let lastDefaultDiceMax = defaultDiceMax;
+    let lastMaxCubes = 9;
     const poll = async () => {
       const val = await AsyncStorage.getItem('defaultDiceMax');
       if (val !== null && isMounted) {
         const numVal = Number(val);
-        if (numVal !== lastValue) {
+        if (numVal !== lastDefaultDiceMax) {
           setDefaultDiceMax(numVal);
-          lastValue = numVal;
+          lastDefaultDiceMax = numVal;
         }
       }
-      if (isMounted) setTimeout(poll, 500);
+      const maxCubesVal = await AsyncStorage.getItem('maxCubes');
+      if (maxCubesVal !== null && isMounted) {
+        const numMaxCubes = Number(maxCubesVal);
+        if (numMaxCubes !== lastMaxCubes) {
+          setSliderMax(numMaxCubes);
+          lastMaxCubes = numMaxCubes;
+        }
+      }
+      if (isMounted) setTimeout(poll, 1000);
     };
     poll();
     return () => { isMounted = false; };
   }, [defaultDiceMax]);
+
+  // State for slider maximum value
+  const [sliderMax, setSliderMax] = useState(9);
 
   // Effect to run when numCubes changes (slider moved)
   // This ensures new cubes get a random value immediately
@@ -172,9 +179,9 @@ const App = () => {
         <Slider
           style={styles.slider}
           minimumValue={1}
-          maximumValue={9}
+          maximumValue={sliderMax}
           step={1}
-          value={numCubes}
+          value={numCubes > sliderMax ? sliderMax : numCubes}
           onValueChange={(value) => setNumCubes(value)}
           minimumTrackTintColor={Colors.dark.sliderMinTrack}
           maximumTrackTintColor={Colors.dark.sliderMaxTrack}
