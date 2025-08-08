@@ -188,6 +188,7 @@ const SettingsScreen = () => {
         onValueChange={toggleSwitch}
         trackColor={{ false: '#767577', true: Colors.dark.buttonText }}
         thumbColor={allowCapture ? Colors.dark.buttonText : '#f4f3f4'}
+        style={{ marginTop: -15, marginBottom: -10 }}
       />
 
       {/* Divider */}
@@ -309,10 +310,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
+    justifyContent: 'center',
   },
   slider: {
     flex: 1,
     height: 40,
+    marginBottom: -5,
+    marginTop: -5,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   valueText: {
     fontSize: 18,
@@ -320,12 +326,14 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     width: 32,
     textAlign: 'center',
+    alignSelf: 'center',
+    marginBottom: 2,
   },
   divider: {
     width: '100%',
     height: 1,
     backgroundColor: Colors.dark.border,
-    marginVertical: 8,
+    marginVertical: 10,
   },
   pickerRow: {
     width: '100%',
@@ -381,9 +389,7 @@ const styles = StyleSheet.create({
   },
   licenseContainer: {
     position: 'absolute',
-    bottom: 24,
-    left: 24,
-    right: 24,
+    bottom: 10,
     alignItems: 'center',
   },
   licenseText: {
