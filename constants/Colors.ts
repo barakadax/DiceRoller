@@ -1,6 +1,6 @@
 /**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
+ * App color palette for both dark and light themes.
+ * All color values are named and available for use throughout the app.
  */
 
 const tintColorDark = '#fff';
@@ -9,19 +9,47 @@ export const Colors = {
   dark: {
     text: '#ECEDEE',
     background: '#151718',
+    surface: '#232526',
+    card: '#232526',
     tint: tintColorDark,
     icon: '#9BA1A6',
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
     border: '#ff8c00',
+    borderLight: '#ffb366',
+    borderMuted: '#333',
     cube: '#474747',
     cubeLocked: '#171717',
     cubeText: '#ff8c00',
+    cubeTextAlt: '#f1c40f',
+    cubeTextMuted: '#808080',
+    cubeTextWhite: '#fff',
+    cubeTextBlack: '#000',
+    cubeTextRed: '#f1181b',
+    cubeTextPurple: '#800080',
+    cubeTextBlue: '#365ca9',
+    cubeTextCyan: '#00A6E1',
+    cubeTextGreen: '#27ae60',
+    cubeTextDarkGreen: '#06402B',
+    cubeTextPink: '#c300e7',
     button: '#ff8c00',
     buttonText: '#f0f0f0',
+    buttonAlt: '#bb8c00',
     sliderThumb: '#ff8c00',
     sliderMinTrack: '#bb8c00',
     sliderMaxTrack: '#fff',
     lockIcon: '#fff',
+    modalBackground: '#232526',
+    overlay: 'rgba(0,0,0,0.4)',
+    imageBg: '#222',
+    pickerBg: '#2d2d2d',
+    link: '#2980b9',
+    error: '#f1181b',
+    warning: '#f1c40f',
+    success: '#27ae60',
+    info: '#00A6E1',
+    disabled: '#808080',
+    highlight: '#ffb366',
+    shadow: '#000',
   },
 };

@@ -24,10 +24,11 @@ adb devices
 
 ## TODO:
 <ol>
+    <li>Add support video/gif as dice background</li>
+    <li>Fix icons</li>
     <li>Add support on shake to roll</li>
     <li>Better ux/ui</li>
-    <li>Fix icons</li>
-    <li>instead of dice with same background each dice can have own background including gif/video as background</li>
+    <li>3D dices with real dice throwing animation</li>
     <li>Test with Playwright?</li>
     <li>Google ads?</li>
     <li>Skins for dices purchaseable from the settings menu?</li>
