@@ -160,6 +160,8 @@ const SettingsScreen = () => {
             <FlatList
               data={Array.from({ length: maxOfMaxCubes - minOfMaxCubes + 1 }, (_, i) => minOfMaxCubes + i)}
               keyExtractor={item => item.toString()}
+              contentContainerStyle={{ width: screenWidth * 0.9, alignItems: 'stretch' }}
+              ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: '#ccc', width: '96%', alignSelf: 'center'  }} />}
               renderItem={({ item, index }) => (
                 <TouchableOpacity
                   style={styles.pickerItem}
@@ -231,7 +233,6 @@ const styles = StyleSheet.create({
   inlineRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
     width: '100%',
     minHeight: 36,
   },
@@ -269,7 +270,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    marginBottom: 10,
   },
   colorOption: {
     width: 32,
@@ -280,7 +280,6 @@ const styles = StyleSheet.create({
     borderColor: Colors.dark.border,
   },
   defaultButton: {
-    margin: 8,
     marginBottom: 24,
     backgroundColor: Colors.dark.button,
     borderRadius: 8,
@@ -303,7 +302,6 @@ const styles = StyleSheet.create({
   },
   colorLabel: {
     fontSize: 18,
-    marginBottom: 0,
     color: Colors.dark.buttonText,
     alignSelf: 'center',
   },
@@ -311,7 +309,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
-    marginBottom: 16,
   },
   slider: {
     flex: 1,
@@ -328,12 +325,12 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 1,
     backgroundColor: Colors.dark.border,
-    marginVertical: 14,
+    marginVertical: 8,
   },
   pickerRow: {
     width: '100%',
     height: 50,
-    marginBottom: 16,
+    marginBottom: 6,
     backgroundColor: '#2d2d2d', // grayish background
     borderRadius: 8,
     borderWidth: 1,
@@ -365,11 +362,11 @@ const styles = StyleSheet.create({
   },
   pickerItem: {
     width: '100%',
+    alignSelf: 'stretch',
     paddingVertical: 16,
     paddingHorizontal: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#2d2d2d',
   },
   pickerItemText: {
     color: '#ff8c00',
@@ -381,7 +378,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 1,
     backgroundColor: Colors.dark.border,
-    marginTop: 0,
   },
   licenseContainer: {
     position: 'absolute',
