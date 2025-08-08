@@ -17,7 +17,6 @@ export const Colors = {
     cube: '#474747',
     cubeLocked: '#171717',
     cubeText: '#ff8c00',
-    cubeTextLocked: '#fff',
     button: '#ff8c00',
     buttonText: '#f0f0f0',
     sliderThumb: '#ff8c00',

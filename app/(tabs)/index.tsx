@@ -10,6 +10,7 @@ const App = () => {
   const [lockedCubes, setLockedCubes] = useState<boolean[]>([]);
   const [cubeMaxValues, setCubeMaxValues] = useState<number[]>([]);
   const [defaultDiceMax, setDefaultDiceMax] = useState(6);
+  const [cubeTextColor, setCubeTextColor] = useState(Colors.dark.cubeText);
   const animationValues = useRef<Animated.Value[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedCubeIndex, setSelectedCubeIndex] = useState<number | null>(null);
@@ -39,11 +40,12 @@ const App = () => {
       .map((_, i) => animationValues.current[i] || new Animated.Value(1));
   }, [numCubes, defaultDiceMax]);
 
-  // Live update defaultDiceMax and maxCubes from AsyncStorage (poll every 1 second)
+  // Live update defaultDiceMax, maxCubes, and cubeTextColor from AsyncStorage (poll every 1 second)
   useEffect(() => {
     let isMounted = true;
     let lastDefaultDiceMax = defaultDiceMax;
     let lastMaxCubes = 9;
+    let lastCubeTextColor = cubeTextColor;
     const poll = async () => {
       const val = await AsyncStorage.getItem('defaultDiceMax');
       if (val !== null && isMounted) {
@@ -61,11 +63,16 @@ const App = () => {
           lastMaxCubes = numMaxCubes;
         }
       }
+      const colorVal = await AsyncStorage.getItem('cubeTextColor');
+      if (colorVal && isMounted && colorVal !== lastCubeTextColor) {
+        setCubeTextColor(colorVal);
+        lastCubeTextColor = colorVal;
+      }
       if (isMounted) setTimeout(poll, 1000);
     };
     poll();
     return () => { isMounted = false; };
-  }, [defaultDiceMax]);
+  }, [defaultDiceMax, cubeTextColor]);
 
   // State for slider maximum value
   const [sliderMax, setSliderMax] = useState(9);
@@ -165,7 +172,7 @@ const App = () => {
             }}
             activeOpacity={0.7}
           >
-            <Text style={[styles.cubeText, isLocked && styles.cubeTextLocked, { fontSize: dynamicFontSize }]}>{value}</Text>
+            <Text style={[styles.cubeText, isLocked && { fontSize: dynamicFontSize, color: cubeTextColor }]}>{value}</Text>
             {isLocked && <Text style={styles.lockIcon}>{'\u{1F512}'}</Text>}
           </TouchableOpacity>
         </Animated.View>
@@ -310,9 +317,6 @@ const styles = StyleSheet.create({
   cubeText: {
     fontWeight: 'bold',
     color: Colors.dark.cubeText,
-  },
-  cubeTextLocked: {
-    color: Colors.dark.cubeTextLocked, // Change this to your preferred locked color
   },
   rerandomizeButton: {
     backgroundColor: Colors.dark.button,

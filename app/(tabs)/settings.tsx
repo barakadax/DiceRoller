@@ -5,12 +5,29 @@ import React, { useEffect, useState } from 'react';
 import { Dimensions, FlatList, Modal, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { Colors } from '../../constants/Colors';
 
+const cubeTextColorOptions = [
+  '#000000',
+  '#808080',
+  '#ffffff',
+  '#f1c40f',
+  Colors.dark.cubeText,
+  '#f1181b',
+  '#c300e7',
+  '#800080',
+  '#365ca9',
+  '#00A6E1',
+  '#27ae60',
+  '#06402B',
+];
+
 const SettingsScreen = () => {
   const [allowCapture, setAllowCapture] = useState(false);
   const [allowCaptureLoaded, setAllowCaptureLoaded] = useState(false);
   const [defaultDiceMax, setDefaultDiceMax] = useState(6);
   const [maxCubes, setMaxCubes] = useState(9);
   const [pickerVisible, setPickerVisible] = useState(false);
+  const [cubeTextColor, setCubeTextColor] = useState(Colors.dark.cubeText);
+  const [colorPickerVisible, setColorPickerVisible] = useState(false);
 
   // Load from AsyncStorage on mount (for all settings)
   useEffect(() => {
@@ -29,6 +46,9 @@ const SettingsScreen = () => {
         setAllowCapture(val === 'true');
         setAllowCaptureLoaded(true);
       }
+    });
+    AsyncStorage.getItem('cubeTextColor').then(val => {
+      if (val) setCubeTextColor(val);
     });
   }, []);
 
@@ -49,6 +69,9 @@ const SettingsScreen = () => {
   useEffect(() => {
     AsyncStorage.setItem('maxCubes', String(maxCubes));
   }, [maxCubes]);
+  useEffect(() => {
+    AsyncStorage.setItem('cubeTextColor', cubeTextColor);
+  }, [cubeTextColor]);
 
   const toggleSwitch = async () => {
     setAllowCapture((prev) => !prev);
@@ -60,6 +83,47 @@ const SettingsScreen = () => {
   if (!allowCaptureLoaded) return null;
   return (
     <View style={styles.container}>
+
+      {/* Cube Text Color Picker */}
+      <View style={styles.inlineRow}>
+        <Text style={styles.colorLabel}>Cube Text Color</Text>
+        <TouchableOpacity
+          style={styles.pickColorButton}
+          onPress={() => setColorPickerVisible(true)}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.pickColorButtonText}>Pick Color</Text>
+        </TouchableOpacity>
+        <View style={[styles.colorPreview, { backgroundColor: cubeTextColor }]} />
+      </View>
+      <Modal
+        visible={colorPickerVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setColorPickerVisible(false)}
+      >
+        <TouchableOpacity style={styles.pickerModalOverlay} activeOpacity={1} onPress={() => setColorPickerVisible(false)}>
+          <View style={[styles.pickerModalContent, { width: screenWidth * 0.7 }]}>
+            <Text style={{ color: Colors.dark.buttonText, fontSize: 16, marginBottom: 10 }}>Select Cube Text Color</Text>
+            <View style={styles.colorOptionsRow}>
+              {cubeTextColorOptions.map((color, _) => (
+                <TouchableOpacity
+                  key={color}
+                  style={[styles.colorOption, { backgroundColor: color, borderWidth: color === cubeTextColor ? 3 : 1, borderColor: color === cubeTextColor ? '#fff' : Colors.dark.border }]}
+                  onPress={() => {
+                    setCubeTextColor(color);
+                    setColorPickerVisible(false);
+                  }}
+                />
+              ))}
+            </View>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+
+      {/* Divider */}
+      <View style={styles.divider} />
+
       {/* Default dice max value setting */}
       <Text style={styles.label}>Default Dice Max Value</Text>
       <View style={styles.sliderRow}>
@@ -134,9 +198,11 @@ const SettingsScreen = () => {
           setDefaultDiceMax(6);
           setMaxCubes(9);
           setAllowCapture(false);
+          setCubeTextColor(Colors.dark.cubeText);
           await AsyncStorage.setItem('defaultDiceMax', '6');
           await AsyncStorage.setItem('maxCubes', '9');
           await AsyncStorage.setItem('allowCapture', 'false');
+          await AsyncStorage.setItem('cubeTextColor', Colors.dark.cubeText);
         }}
       >
         <Text style={styles.defaultButtonText}>Default Settings</Text>
@@ -162,7 +228,58 @@ const SettingsScreen = () => {
 };
 
 const styles = StyleSheet.create({
-    defaultButton: {
+  inlineRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+    width: '100%',
+    minHeight: 36,
+  },
+  label: {
+    fontSize: 18,
+    marginBottom: 8,
+    color: Colors.dark.buttonText,
+    alignSelf: 'flex-start',
+  },
+  pickColorButton: {
+    marginLeft: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 16,
+    backgroundColor: Colors.dark.button,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
+    alignSelf: 'center',
+  },
+  colorPreview: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    marginLeft: 12,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
+    alignSelf: 'center',
+  },
+  pickColorButtonText: {
+    color: Colors.dark.buttonText,
+    fontWeight: 'bold',
+    fontSize: 15,
+  },
+  colorOptionsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    marginBottom: 10,
+  },
+  colorOption: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    margin: 6,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
+  },
+  defaultButton: {
     margin: 8,
     marginBottom: 24,
     backgroundColor: Colors.dark.button,
@@ -184,11 +301,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.dark.background,
     paddingHorizontal: 24,
   },
-  label: {
+  colorLabel: {
     fontSize: 18,
-    marginBottom: 8,
+    marginBottom: 0,
     color: Colors.dark.buttonText,
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
   },
   sliderRow: {
     flexDirection: 'row',
@@ -211,7 +328,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 1,
     backgroundColor: Colors.dark.border,
-    marginVertical: 24,
+    marginVertical: 14,
   },
   pickerRow: {
     width: '100%',
