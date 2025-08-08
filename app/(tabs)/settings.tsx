@@ -3,7 +3,7 @@ import Slider from '@react-native-community/slider';
 import * as ImagePicker from 'expo-image-picker';
 import * as ScreenCapture from 'expo-screen-capture';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Dimensions, FlatList, Image, Modal, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, FlatList, Image, Modal, StyleSheet, Switch, Text, TouchableOpacity, View, Linking } from 'react-native';
 import { Colors } from '../../constants/Colors';
 
 const CUBE_TEXT_COLOR_OPTIONS = [
@@ -311,9 +311,7 @@ const SettingsScreen: React.FC = () => {
           style={[styles.licenseText, styles.link]}
           accessibilityRole="link"
           onPress={() => {
-            import('react-native').then(({ Linking }) => {
-              Linking.openURL('https://github.com/barakadax/DiceRoller');
-            });
+            Linking.openURL('https://github.com/barakadax/DiceRoller');
           }}
         >
           GitHub repo
