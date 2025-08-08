@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Slider from "@react-native-community/slider";
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Dimensions, Easing, Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Dimensions, Easing, ImageBackground, Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Colors } from '../../constants/Colors';
 
 const App = () => {
@@ -14,6 +14,7 @@ const App = () => {
   const animationValues = useRef<Animated.Value[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedCubeIndex, setSelectedCubeIndex] = useState<number | null>(null);
+  const [cubeBgImage, setCubeBgImage] = useState<string | null>(null);
 
   // Function to generate a random number between 1 and max
   const generateRandomValue = (max: number) => {
@@ -40,12 +41,13 @@ const App = () => {
       .map((_, i) => animationValues.current[i] || new Animated.Value(1));
   }, [numCubes, defaultDiceMax]);
 
-  // Live update defaultDiceMax, maxCubes, and cubeTextColor from AsyncStorage (poll every 1 second)
+  // Live update defaultDiceMax, maxCubes, cubeTextColor, and cubeBgImage from AsyncStorage (poll every 1 second)
   useEffect(() => {
     let isMounted = true;
     let lastDefaultDiceMax = defaultDiceMax;
     let lastMaxCubes = 9;
     let lastCubeTextColor = cubeTextColor;
+    let lastCubeBgImage = cubeBgImage;
     const poll = async () => {
       const val = await AsyncStorage.getItem('defaultDiceMax');
       if (val !== null && isMounted) {
@@ -68,11 +70,16 @@ const App = () => {
         setCubeTextColor(colorVal);
         lastCubeTextColor = colorVal;
       }
+      const bgVal = await AsyncStorage.getItem('cubeBgImage');
+      if (isMounted && bgVal !== lastCubeBgImage) {
+        setCubeBgImage(bgVal);
+        lastCubeBgImage = bgVal;
+      }
       if (isMounted) setTimeout(poll, 1000);
     };
     poll();
     return () => { isMounted = false; };
-  }, [defaultDiceMax, cubeTextColor]);
+  }, [defaultDiceMax, cubeTextColor, cubeBgImage]);
 
   // State for slider maximum value
   const [sliderMax, setSliderMax] = useState(9);
@@ -150,6 +157,106 @@ const App = () => {
     const dynamicFontSize = Math.max(32, Math.round(cubeSize * 0.35));
     return cubeValues.map((value, index) => {
       const isLocked = lockedCubes[index];
+      const hasBgImage = !!cubeBgImage;
+      const baseCubeStyle = [
+        styles.cube,
+        { width: cubeSize, height: cubeSize, margin: cubeMargin },
+        isLocked && styles.lockedCube,
+        (!isLocked && hasBgImage) && { backgroundColor: 'transparent', borderWidth: 0 },
+      ];
+      // Locked + image: overlay locked color with transparency over image
+      if (isLocked && hasBgImage) {
+        return (
+          <Animated.View
+            key={index}
+            style={{
+              transform: [
+                { scale: animationValues.current[index] || 1 },
+              ],
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                width: cubeSize,
+                height: cubeSize,
+                margin: cubeMargin,
+                borderRadius: 5,
+                overflow: 'hidden',
+                justifyContent: 'center',
+                alignItems: 'center',
+                padding: 0,
+              }}
+              onPress={() => toggleLock(index)}
+              onLongPress={() => {
+                setSelectedCubeIndex(index);
+                setModalVisible(true);
+              }}
+              activeOpacity={0.7}
+            >
+              <ImageBackground
+                source={{ uri: cubeBgImage }}
+                style={{ flex: 1, width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' }}
+                imageStyle={{ borderRadius: 5 }}
+                resizeMode="cover"
+              >
+                <View style={{
+                  ...StyleSheet.absoluteFillObject,
+                  backgroundColor: 'rgba(60,60,60,0.9)',
+                  borderRadius: 5,
+                  borderWidth: 2,
+                  borderColor: Colors.dark.lockIcon,
+                  zIndex: 1,
+                }} />
+                <Text style={[styles.cubeText, { fontSize: dynamicFontSize, color: cubeTextColor, zIndex: 2 }]}>{value}</Text>
+                <Text style={[styles.lockIcon, { zIndex: 2 }]}>{'\u{1F512}'}</Text>
+              </ImageBackground>
+            </TouchableOpacity>
+          </Animated.View>
+        );
+      }
+      // Unlocked + image: just show image background
+      if (!isLocked && hasBgImage) {
+        return (
+          <Animated.View
+            key={index}
+            style={{
+              transform: [
+                { scale: animationValues.current[index] || 1 },
+              ],
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                width: cubeSize,
+                height: cubeSize,
+                margin: cubeMargin,
+                borderRadius: 5,
+                overflow: 'hidden',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'transparent',
+                padding: 0,
+              }}
+              onPress={() => toggleLock(index)}
+              onLongPress={() => {
+                setSelectedCubeIndex(index);
+                setModalVisible(true);
+              }}
+              activeOpacity={0.7}
+            >
+              <ImageBackground
+                source={{ uri: cubeBgImage }}
+                style={{ flex: 1, width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' }}
+                imageStyle={{ borderRadius: 5 }}
+                resizeMode="cover"
+              >
+                <Text style={[styles.cubeText, { fontSize: dynamicFontSize, color: cubeTextColor }]}>{value}</Text>
+              </ImageBackground>
+            </TouchableOpacity>
+          </Animated.View>
+        );
+      }
+      // No image: fallback to original
       return (
         <Animated.View
           key={index}
@@ -160,11 +267,7 @@ const App = () => {
           }}
         >
           <TouchableOpacity
-            style={[
-              styles.cube,
-              { width: cubeSize, height: cubeSize, margin: cubeMargin },
-              isLocked && styles.lockedCube,
-            ]}
+            style={baseCubeStyle}
             onPress={() => toggleLock(index)}
             onLongPress={() => {
               setSelectedCubeIndex(index);

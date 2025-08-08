@@ -1,8 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Slider from '@react-native-community/slider';
+import * as ImagePicker from 'expo-image-picker';
 import * as ScreenCapture from 'expo-screen-capture';
 import React, { useEffect, useState } from 'react';
-import { Dimensions, FlatList, Modal, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, FlatList, Image, Modal, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { Colors } from '../../constants/Colors';
 
 const cubeTextColorOptions = [
@@ -28,6 +29,7 @@ const SettingsScreen = () => {
   const [pickerVisible, setPickerVisible] = useState(false);
   const [cubeTextColor, setCubeTextColor] = useState(Colors.dark.cubeText);
   const [colorPickerVisible, setColorPickerVisible] = useState(false);
+  const [cubeBgImage, setCubeBgImage] = useState<string | null>(null);
 
   // Load from AsyncStorage on mount (for all settings)
   useEffect(() => {
@@ -50,7 +52,28 @@ const SettingsScreen = () => {
     AsyncStorage.getItem('cubeTextColor').then(val => {
       if (val) setCubeTextColor(val);
     });
+    AsyncStorage.getItem('cubeBgImage').then(val => {
+      if (val) setCubeBgImage(val);
+    });
   }, []);
+  // Save cubeBgImage to AsyncStorage
+  useEffect(() => {
+    if (cubeBgImage !== null) {
+      AsyncStorage.setItem('cubeBgImage', cubeBgImage);
+    }
+  }, [cubeBgImage]);
+  // Image picker handler
+  const pickImage = async () => {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) return;
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'], // Use array of MediaType as per new API
+      quality: 1,
+    });
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      setCubeBgImage(result.assets[0].uri);
+    }
+  };
 
   useEffect(() => {
     if (!allowCaptureLoaded) return;
@@ -84,6 +107,40 @@ const SettingsScreen = () => {
   return (
     <View style={styles.container}>
 
+      {/* Cube Background Image Picker */}
+      <View style={styles.inlineRow}>
+        <Text style={styles.colorLabel}>Cube Background</Text>
+        <TouchableOpacity
+          style={styles.pickColorButton}
+          onPress={pickImage}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.pickColorButtonText}>Pick</Text>
+        </TouchableOpacity>
+        {cubeBgImage && (
+          <>
+            <Image
+              source={{ uri: cubeBgImage }}
+              style={styles.bgImagePreview}
+              resizeMode="cover"
+            />
+            <TouchableOpacity
+              style={styles.removeImageButton}
+              onPress={async () => {
+                setCubeBgImage(null);
+                await AsyncStorage.removeItem('cubeBgImage');
+              }}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.removeImageButtonText}>X</Text>
+            </TouchableOpacity>
+          </>
+        )}
+      </View>
+
+      {/* Divider */}
+      <View style={styles.divider} />
+
       {/* Cube Text Color Picker */}
       <View style={styles.inlineRow}>
         <Text style={styles.colorLabel}>Cube Text Color</Text>
@@ -92,7 +149,7 @@ const SettingsScreen = () => {
           onPress={() => setColorPickerVisible(true)}
           activeOpacity={0.7}
         >
-          <Text style={styles.pickColorButtonText}>Pick Color</Text>
+          <Text style={styles.pickColorButtonText}>Pick</Text>
         </TouchableOpacity>
         <View style={[styles.colorPreview, { backgroundColor: cubeTextColor }]} />
       </View>
@@ -202,10 +259,12 @@ const SettingsScreen = () => {
           setMaxCubes(9);
           setAllowCapture(false);
           setCubeTextColor(Colors.dark.cubeText);
+          setCubeBgImage(null);
           await AsyncStorage.setItem('defaultDiceMax', '6');
           await AsyncStorage.setItem('maxCubes', '9');
           await AsyncStorage.setItem('allowCapture', 'false');
           await AsyncStorage.setItem('cubeTextColor', Colors.dark.cubeText);
+          await AsyncStorage.removeItem('cubeBgImage');
         }}
       >
         <Text style={styles.defaultButtonText}>Default Settings</Text>
@@ -231,6 +290,34 @@ const SettingsScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  bgImagePreview: {
+    width: 32,
+    height: 32,
+    borderRadius: 6,
+    marginLeft: 8,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
+    backgroundColor: '#222',
+  },
+  removeImageButton: {
+    marginLeft: 8,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'transparent',
+    borderWidth: 2,
+    borderColor: '#ff8c00',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+  },
+  removeImageButtonText: {
+    color: '#ff8c00',
+    fontWeight: 'bold',
+    fontSize: 18,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
   inlineRow: {
     flexDirection: 'row',
     alignItems: 'center',
