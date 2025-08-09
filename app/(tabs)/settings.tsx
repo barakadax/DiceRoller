@@ -257,7 +257,7 @@ const SettingsScreen: React.FC = () => {
         onRequestClose={() => setPickerVisible(false)}
       >
         <TouchableOpacity style={styles.pickerModalOverlay} activeOpacity={1} onPress={() => setPickerVisible(false)}>
-          <View style={[styles.pickerModalContent, { width: screenWidth * 0.9 }]}> 
+          <View style={[styles.pickerModalContent, { width: screenWidth * 0.9 }]}>
             <FlatList
               data={cubeOptions}
               keyExtractor={(item) => item.toString()}
