@@ -24,6 +24,10 @@ npm install -g eas-cli
 export ANDROID_HOME=$HOME/Android
 export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
 
+# Set Java to Java 17
+sudo update-alternatives --config java
+sudo update-alternatives --config javac
+
 # For android
 eas build --platform android --profile production --local
 
