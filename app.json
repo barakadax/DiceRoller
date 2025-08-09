@@ -11,7 +11,15 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.barakadax.DiceRoller",
+      "userInterfaceStyle": "dark",
+      "orientation": "portrait",
+      "splash": {
+        "image": "./assets/images/icon.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#000"
+      }
     },
     "android": {
       "adaptiveIcon": {
