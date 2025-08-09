@@ -20,6 +20,10 @@ npm install
 # First run this for CLI commands
 npm install -g eas-cli
 
+# Set env vars
+export ANDROID_HOME=$HOME/Android
+export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
+
 # For android
 eas build --platform android --profile production --local
 
