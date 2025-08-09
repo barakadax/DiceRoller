@@ -285,14 +285,16 @@ const SettingsScreen: React.FC = () => {
       <View style={styles.divider} />
 
       {/* Screenshot option */}
-      <Text style={styles.label}>Allow Screenshots & Video Recording</Text>
-      <Switch
-        value={allowCapture}
-        onValueChange={handleToggleCapture}
-        trackColor={{ false: '#767577', true: Colors.dark.buttonText }}
-        thumbColor={allowCapture ? Colors.dark.buttonText : '#f4f3f4'}
-        style={{ marginTop: -15, marginBottom: -10 }}
-      />
+      <View style={styles.switchInlineRow}>
+        <Text style={styles.label}>Allow Recording</Text>
+        <Switch
+          value={allowCapture}
+          onValueChange={handleToggleCapture}
+          trackColor={{ false: '#767577', true: Colors.dark.buttonText }}
+          thumbColor={allowCapture ? Colors.dark.buttonText : '#f4f3f4'}
+          style={{ marginLeft: 5, marginTop: -10 }}
+        />
+      </View>
 
       {/* Divider */}
       <View style={styles.divider} />
@@ -356,6 +358,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     minHeight: 36,
+  },
+  switchInlineRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    minHeight: 36,
+    marginBottom: -10,
   },
   label: {
     fontSize: 18,

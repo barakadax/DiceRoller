@@ -1,8 +1,11 @@
 # Dice roller
 Node JS React native android/ios application that is customizable in dice roll options, amount of dices and dices style
 
-## How to run:
+## How to run locally:
 ```shell
+# Remove this library from the `package.json`
+"expo-dev-client"
+
 # For android
 npm start android
 
