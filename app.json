@@ -35,6 +35,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "bd166b1f-ef10-4617-923c-396bb772d0ac"
+      }
+    },
+    "owner": "barakadax"
   }
 }
