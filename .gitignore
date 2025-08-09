@@ -41,3 +41,8 @@ app-example
 /ios/
 .vscode/
 .idea/
+
+# Ignore any file in root that starts with build-
+/build-*
+# Ignore any file in root that ends with .aab
+/*.aab

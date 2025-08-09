@@ -1,5 +1,5 @@
 # Dice roller
-Node JS React native android/ios application that let you decide 1-9 dices to roll<br>
+Node JS React native android/ios application that is customizable in dice roll options, amount of dices and dices style
 
 ## How to run:
 ```shell
@@ -13,6 +13,18 @@ npm start ios
 ## How to install dependencies:
 ```shell
 npm install
+```
+
+## How to build for production:
+```shell
+# First run this for CLI commands
+npm install -g eas-cli
+
+# For android
+eas build --platform android --profile production --local
+
+# For ios
+eas build --platform ios --profile production --local
 ```
 
 ## Commands to check if device is connected and is authorized to debug:
