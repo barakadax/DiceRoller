@@ -42,6 +42,8 @@ app-example
 .vscode/
 .idea/
 
+diceroller-*
+
 # Ignore any file in root that starts with build-
 /build-*
 # Ignore any file in root that ends with .aab
